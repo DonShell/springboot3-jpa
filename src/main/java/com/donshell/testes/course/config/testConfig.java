@@ -12,10 +12,12 @@ import org.springframework.context.annotation.Profile;
 
 import com.donshell.testes.course.entities.Category;
 import com.donshell.testes.course.entities.Order;
+import com.donshell.testes.course.entities.OrderItem;
 import com.donshell.testes.course.entities.Product;
 import com.donshell.testes.course.entities.User;
 import com.donshell.testes.course.entities.enums.OrderStatus;
 import com.donshell.testes.course.repositories.CategoryRepository;
+import com.donshell.testes.course.repositories.OrderItemRepository;
 import com.donshell.testes.course.repositories.OrderRepository;
 import com.donshell.testes.course.repositories.ProductRepository;
 import com.donshell.testes.course.repositories.UserRepository;
@@ -26,8 +28,10 @@ public class testConfig implements CommandLineRunner {
 
 	@Autowired
 	private UserRepository userRepository;
-	
 
+	@Autowired
+	private OrderItemRepository orderItemRepository;
+	
 	@Autowired
 	private ProductRepository productRepository;
 	
@@ -82,5 +86,12 @@ public class testConfig implements CommandLineRunner {
 		
 		
 		productRepository.saveAll(Arrays.asList(p1,p2,p3,p4,p5));
+		
+		OrderItem oi1 = new OrderItem(orderList.get(0), p1, 2, p1.getPrice());
+		OrderItem oi2 = new OrderItem(orderList.get(0), p3, 1, p3.getPrice());
+		OrderItem oi3 = new OrderItem(orderList.get(1), p3, 2, p3.getPrice());
+		OrderItem oi4 = new OrderItem(orderList.get(2), p5, 2, p5.getPrice()); 
+
+		orderItemRepository.saveAll(Arrays.asList(oi1,oi2,oi3,oi4));
 	}
 }
