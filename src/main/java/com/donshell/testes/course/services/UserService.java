@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.donshell.testes.course.entities.User;
 import com.donshell.testes.course.repositories.UserRepository;
+import com.donshell.testes.course.services.exceptions.DatabaseException;
 import com.donshell.testes.course.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -25,6 +28,7 @@ public class UserService {
 	{
 		Optional <User> obj = repository.findById(id);
 		//return obj.get();
+		//serve como get mas da um tratamento especial a excessao
 		return obj.orElseThrow(() -> new ResourceNotFoundException(id));
 	}
 	
@@ -35,7 +39,19 @@ public class UserService {
 
 	public void delete(Long id)
 	{
-		repository.deleteById(id);
+		try {
+			repository.deleteById(id);
+		}
+		//id não encontrado
+		catch(EmptyResultDataAccessException e)
+		{
+			throw new ResourceNotFoundException(id);
+		}
+		//entidades vinculadas ao objetos
+		catch (DataIntegrityViolationException e )
+		{
+			throw new DatabaseException(e.getMessage());
+		}
 	}
 	
 
