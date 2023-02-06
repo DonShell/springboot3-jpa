@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import com.donshell.testes.course.entities.Category;
 import com.donshell.testes.course.entities.Order;
 import com.donshell.testes.course.entities.OrderItem;
+import com.donshell.testes.course.entities.Payment;
 import com.donshell.testes.course.entities.Product;
 import com.donshell.testes.course.entities.User;
 import com.donshell.testes.course.entities.enums.OrderStatus;
@@ -64,6 +65,13 @@ public class testConfig implements CommandLineRunner {
 		Category cat1 = new Category(null, "Electronics");
 		Category cat2 = new Category(null, "Books");
 		Category cat3 = new Category(null, "Computers");
+		
+		//Salvando pagamento
+		Payment pay1 = new Payment(null, Instant.parse("2019-06-20T19:40:07Z"),orderList.get(0));
+		//vinculando o pagamento
+		orderList.get(0).setPayment(pay1);
+		//o peyment sera salvo no banco no proximo orderRepository.saveAll(); que chame ele
+		
 		
 		categoryRepository.saveAll(Arrays.asList(cat1,cat2,cat3));
 		
