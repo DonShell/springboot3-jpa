@@ -13,59 +13,58 @@ import com.donshell.testes.course.repositories.UserRepository;
 import com.donshell.testes.course.services.exceptions.DatabaseException;
 import com.donshell.testes.course.services.exceptions.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class UserService {
-	
+
 	@Autowired
 	private UserRepository repository;
-	
-	
-	public List<User> findAll()
-	{
+
+	public List<User> findAll() {
 		return repository.findAll();
 	}
-	public User findByID(Long id)
-	{
-		Optional <User> obj = repository.findById(id);
-		//return obj.get();
-		//serve como get mas da um tratamento especial a excessao
+
+	public User findByID(Long id) {
+		Optional<User> obj = repository.findById(id);
+		// return obj.get();
+		// serve como get mas da um tratamento especial a excessao
 		return obj.orElseThrow(() -> new ResourceNotFoundException(id));
 	}
-	
-	public User insert(User obj)
-	{
+
+	public User insert(User obj) {
 		return repository.save(obj);
 	}
 
-	public void delete(Long id)
-	{
+	public void delete(Long id) {
 		try {
 			repository.deleteById(id);
 		}
-		//id não encontrado
-		catch(EmptyResultDataAccessException e)
-		{
+		// id não encontrado
+		catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException(id);
 		}
-		//entidades vinculadas ao objetos
-		catch (DataIntegrityViolationException e )
-		{
+		// entidades vinculadas ao objetos
+		catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e.getMessage());
 		}
 	}
-	
 
-	public User update(Long id, User obj)
-	{
-		//só prepara o objeto para ser monitorado
-		User entity = repository.getReferenceById(id);
-		updateData(entity,obj);
-		return repository.save(entity);
+	public User update(Long id, User obj) {
+		try {
+			// só prepara o objeto para ser monitorado
+			User entity = repository.getReferenceById(id);
+			updateData(entity, obj);
+			return repository.save(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 	}
+
 	private void updateData(User entity, User obj) {
 		entity.setName(obj.getName());
 		entity.setEmail(obj.getEmail());
 		entity.setPhone(obj.getPhone());
-		
+
 	}
 }
